@@ -25,7 +25,7 @@
         </div>
         <div class="form-group">
           <label for="nama">Nama Siswa</label>
-          <select required class="custom-select form-control" name="nama" id="nama">
+          <select required class="custom-select form-control" onchange='siswa(this.value)' name="nama" id="nama">
               <option disabled selected>- Nama Siswa -</option>
           <?php
               $hasil = mysqli_query($koneksi,"select * from tbl_siswa") or die(mysqli_error($koneksi));
@@ -60,6 +60,32 @@
   </div>
 </div>
 <?php
+$proses = mysqli_query($koneksi,'select * from bayar_akhir order by id_bayar desc')or die(mysqli_error($koneksi));
+$j=0;
+echo "<script>var cek = [";
+while($data = mysqli_fetch_assoc($proses)){
+  echo "['".$data['nis']."','".$data['sisa_bayar']."'],";
+  $j++;
+}
+echo '];';
+
+$proses = mysqli_query($koneksi,'select * from tbl_siswa')or die(mysqli_error($koneksi));
+$j=0;
+echo "var sis = [";
+while($data = mysqli_fetch_assoc($proses)){
+  echo "['".$data['nis']."','".$data['tahun_masuk']."'],";
+  $j++;
+}
+echo '];';
+
+$proses = mysqli_query($koneksi,'select * from parameter')or die(mysqli_error($koneksi));
+$i=0;
+echo "var data = [";
+while($data = mysqli_fetch_assoc($proses)){
+  echo "['".$data['jenis_pembayaran']."','".$data['jumlah']."','".$data['tahun']."'],";
+  $i++;
+}
+echo '];</script>';
 if(isset($_POST['submit'])){
     $id = $_POST['id'];
     $nama = $_POST['nama'];
@@ -67,11 +93,11 @@ if(isset($_POST['submit'])){
     $tanggal = $_POST['tanggal'];
     $terbayar = $_POST['terbayar'];
     $sisa = $_POST['sisa'];
-    $query = mysqli_query($koneksi,'insert into bayar_akhir values("'.$id.'","'.$nama.'","'.$total.'","'.$terbayar.'","'.$sisa.'")') or die(mysqli_error($koneksi));
+    $query = mysqli_query($koneksi,'insert into bayar-akhir values("'.$id.'","'.$nama.'","'.$total.'","'.$terbayar.'","'.$sisa.'")') or die(mysqli_error($koneksi));
     $query1 = mysqli_query($koneksi,'insert into tbl_bayar values("'.$id.'","'.$tanggal.'","AKHIR")') or die(mysqli_error($koneksi));
     if($query && $query1){
         ?> <script>
-        location.replace('bayar-akhir.php');
+        location.replace('index.php?url=bayar-akhir');
         alert('Berhasil Tambah Data !');
         </script><?php
     }else{
@@ -81,6 +107,46 @@ if(isset($_POST['submit'])){
 ?>
 </html>
 <script>
+function siswa(test){
+  document.getElementById('total').value = 0;
+  document.getElementById('sisa').value = 0;
+  var param;
+  console.log(sis.length);
+  for(var i=0;i<sis.length;i++){
+    if(test == sis[i][0]){
+      param = sis[i][1];
+      break;
+    }
+  }
+  if(cek.length == 0) {
+    for(var i=0;i<data.length;i++){
+      console.log(data[i][2]);
+      if(data[i][2] == param && data[i][0]=="AKHIR"){
+        document.getElementById('total').value = data[i][1];
+        document.getElementById('sisa').value = data[i][1];
+      }
+    }
+  }
+  else{
+    for(var i=0;i<cek.length;i++){
+      if(cek[i][0] == test){
+        document.getElementById('total').value = cek[i][1];
+        document.getElementById('sisa').value = cek[i][1];
+        break;
+      }
+      else{
+        for(var j=0;j<data.length;j++){
+          console.log(data[i][2]);
+          if(data[j][2] == param && data[j][0]=="AKHIR"){
+            document.getElementById('total').value = data[j][1];
+            document.getElementById('sisa').value = data[j][1];
+            break;
+          }
+        }
+      }
+    }
+  }
+}
 function bayar(){
     var total = parseInt(document.getElementById('total').value);
     var terbayar = parseInt(document.getElementById('terbayar').value);
@@ -101,4 +167,5 @@ function bayar(){
         document.getElementById('sisa').value = total;
     }
 }
+console.log(cek);
 </script>

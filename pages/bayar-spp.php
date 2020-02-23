@@ -2,7 +2,7 @@
   <div class="col-md-10 offset-md-1">
     <div class="card card-primary">
       <div class="card-header">
-        <h3 class="card-title">Pembayaran Infaq</h3>
+        <h3 class="card-title">Pembayaran SPP</h3>
         <div class="card-tools">
           <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
             <i class="fas fa-minus"></i></button>
@@ -74,11 +74,11 @@ if(isset($_POST['submit'])){
     $nama = $_POST['nama'];
     $total = $_POST['pembayaran'];
     $tanggal = $_POST['tanggal'];
-    $query = mysqli_query($koneksi,'insert into bayar_infaq values("'.$id.'","'.$nama.'","'.$total.'")') or die(mysqli_error($koneksi));
-    $query1 = mysqli_query($koneksi,'insert into tbl_bayar values("'.$id.'","'.$tanggal.'","INFAQ")') or die(mysqli_error($koneksi));
+    $query = mysqli_query($koneksi,'insert into bayar_spp values("'.$id.'","'.$nama.'","'.$total.'")') or die(mysqli_error($koneksi));
+    $query1 = mysqli_query($koneksi,'insert into tbl_bayar values("'.$id.'","'.$tanggal.'","SPP")') or die(mysqli_error($koneksi));
     if($query && $query1){
         ?> <script>
-        location.replace('index.php?url=bayar-infaq');
+        location.replace('index.php?url=bayar-spp');
         alert('Berhasil Tambah Data !');
         </script><?php
     }else{
@@ -100,7 +100,7 @@ function siswa(test){
     }
     for(var i=0;i<data.length;i++){
         console.log(data[i][2]);
-        if(data[i][2] == param && data[i][0]=="INFAQ"){
+        if(data[i][2] == param && data[i][0]=="SPP"){
             document.getElementById('total').value = data[i][1];
         }
     }
